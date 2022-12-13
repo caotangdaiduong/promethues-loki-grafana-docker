@@ -16,7 +16,7 @@ Inspired by [dockprom](https://github.com/stefanprodan/dockprom)
 
 ## Install
 
-Clone this repository on your Docker host, cd into `domolo` directory and run
+Clone this repository on your Docker host, cd into `promethues-loki-grafana-docker` directory and run
 `docker-compose up -d`:
 
 ```bash
