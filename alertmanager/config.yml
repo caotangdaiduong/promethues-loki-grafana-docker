@@ -1,0 +1,74 @@
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'PROEJECT PROD <no-reply@gmail.com>'
+  smtp_auth_username: 'no-reply@gmail.com'
+  smtp_auth_identity: 'no-reply@gmail.com'
+  smtp_auth_password: 'stvcngschthnsdwd'
+route:
+  group_by: ['namespace','job','service','target']
+  group_wait: 30s
+  group_interval: 5s
+  repeat_interval: 1h
+  # # A default receiver
+  receiver: 'team-xxx'
+  # # The child route trees.
+  routes:
+  - matchers:
+      - severity="critical"
+    receiver: 'team-xxx'
+  - matchers:
+      - service=~"redis|mysql|elasticsearch|rabbitmq"
+      - severity="critical"
+    receiver: 'team-yyy'
+  - matchers:
+      - service=~"redis|mysql|elasticsearch|rabbitmq"
+      - severity="critical"
+      - target="yyy"
+    receiver: 'telegram'
+  - receiver: 'team-yyy'
+    group_wait: 10s
+    matchers:
+    - namespace="monitoring"
+  - receiver: 'team-yyy'
+    group_wait: 10s
+    matchers:
+    - service=~"redis|mysql|elasticsearch|rabbitmq"
+  - receiver: 'team-yyy'
+    group_wait: 10s
+    matchers:
+    - target=~"yyy"
+  - receiver: 'telegram'
+    group_wait: 10s
+    matchers:
+    - service=~"redis|mysql|elasticsearch|rabbitmq"
+# Inhibition rules allow to mute a set of alerts given that another alert is firing
+# We use this to mute any warning-level notifications if the same alert is already critical.
+inhibit_rules:
+- source_matchers: [severity="critical"]
+  target_matchers: [severity="warning"]
+  # Apply inhibition if the alertname is the same.
+  # CAUTION:
+  ## If all label names listed in `equal` are missing from both the source and target alerts, the inhibition rule will apply!
+  equal: [alertname, cluster, service]
+# Receiver list
+receivers:
+- name: 'team-xxx'
+  email_configs:
+  - send_resolved: true
+    to: aaaaaa@gmail.com
+    # headers:
+    #   subject: '{{ template "email.default.subject" . }}'
+    # html: '{{ template "email.default.html" . }}'
+- name: 'team-yyy'
+  email_configs:
+  - send_resolved: true
+    to: xxxxx@gmail.com
+- name: 'telegram'
+  telegram_config:
+  - api_url: https://api.telegram.org
+    bot_token: '11111111:AAAAAAAA'
+    chat_id: -1001896396741
+    disable_notifications: false
+    send_resolved: true
+    parse_mode: ""
