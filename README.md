@@ -20,8 +20,8 @@ Clone this repository on your Docker host, cd into `domolo` directory and run
 `docker-compose up -d`:
 
 ```bash
-git clone
-cd domolo
+git clone https://github.com/caotangdaiduong/promethues-loki-grafana-docker.git
+cd promethues-loki-grafana-docker
 docker-compose up -d
 ```
 
